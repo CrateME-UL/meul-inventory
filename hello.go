@@ -1,35 +1,24 @@
 package main
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-type foo struct {
-	Message    string
-	Ports      []int
-	ServerName string
-}
-
-func newFoo() (*foo, error) {
-	return &foo{
-		Message:    "foo loves bar",
-		Ports:      []int{80},
-		ServerName: "Foo",
-	}, nil
-}
+import "fmt"
 
 func main() {
-	res, err := newFoo()
-
+	fmt.Println("vim-go")
+	err := sayHi()
 	if err != nil {
-		panic("trash")
+		panic(err)
 	}
+}
 
-	out, err := json.Marshal(res)
-	if err != nil {
-		panic("garabage")
-	}
-	fmt.Printf("out = %+v\n", out)
-	fmt.Printf("res = %+v\n", res)
+// sayHi() returns the string "hi"
+func sayHi() error {
+	fmt.Println("hi")
+	fmt.Println("fmt")
+	return nil
+}
+
+func sayHiai() error {
+	fmt.Println("hi")
+	fmt.Println("fmt")
+	return nil
 }
