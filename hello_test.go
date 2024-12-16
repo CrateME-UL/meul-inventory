@@ -13,6 +13,10 @@ func TestBar(t *testing.T) {
 	}
 }
 
+func Bar() any {
+	panic("unimplemented")
+}
+
 func TestQuz(t *testing.T) {
 	result := Qux("bar")
 	if result != "bar" {
@@ -23,4 +27,8 @@ func TestQuz(t *testing.T) {
 	if result != "INVALID" {
 		t.Errorf("expecting INVALID, got %s", result)
 	}
+}
+
+func Qux(s string) any {
+	panic("unimplemented")
 }

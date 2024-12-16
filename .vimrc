@@ -12,7 +12,6 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'matze/vim-move'
 call plug#end()
 
-let g:rehash256 = 1
 let g:molokai_original = 1
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsListSnippets="<c-tab>"
@@ -43,15 +42,15 @@ nnoremap <leader>a :cclose<CR>
 let g:move_map_keys = 0
 
 " Custom key mappings for Normal mode
-nmap <C-i> <Plug>MoveLineUp
+nmap <C-j> <Plug>MoveLineUp
 nmap <C-k> <Plug>MoveLineDown
-nmap <C-j> <Plug>MoveCharLeft
+nmap <C-h> <Plug>MoveCharLeft
 nmap <C-l> <Plug>MoveCharRight
 
 " Custom key mappings for Visual mode
-vmap <C-i> <Plug>MoveBlockUp
+vmap <C-j> <Plug>MoveBlockUp
 vmap <C-k> <Plug>MoveBlockDown
-vmap <C-j> <Plug>MoveBlockLeft
+vmap <C-h> <Plug>MoveBlockLeft
 vmap <C-l> <Plug>MoveBlockRight
 
 " Duplicate selected text below

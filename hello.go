@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println("vim-go")
+	ft.Println("vim-go")
 	err := sayHi()
 	if err != nil {
 		panic(err)
