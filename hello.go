@@ -3,11 +3,12 @@ package main
 import "fmt"
 
 func main() {
-	ft.Println("vim-go")
+	fmt.Println("vim-go")
 	err := sayHi()
 	if err != nil {
 		panic(err)
 	}
+
 }
 
 // sayHi() returns the string "hi"
@@ -17,7 +18,7 @@ func sayHi() error {
 	return nil
 }
 
-func sayHiai() error {
+func sayHifi() error {
 	fmt.Println("hi")
 	fmt.Println("fmt")
 	return nil
