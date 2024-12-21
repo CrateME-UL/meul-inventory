@@ -1,10 +1,4 @@
 ### to setup project:
-- [setup.md](./setup.md)
-### to install dependencies:
-```bash
-make i
-```
-### to run project
-```bash
-make r
-```
+- setup: [setup.md](./docs/setup.md)
+### to run commands in scripts with make
+- use the [makefile](./scripts/makefile)
