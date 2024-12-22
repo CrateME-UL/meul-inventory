@@ -1,7 +1,7 @@
 package main
 
 import (
-	routes "monequillibreul/inventory/internal/resources"
+	routes "meul/inventory/internal/interfaces/rest"
 
 	"github.com/gin-gonic/gin"
 )
