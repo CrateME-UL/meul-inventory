@@ -2,7 +2,8 @@ i:
 	go mod tidy
 
 r:
-	go run ../cmd/inventory/inventory.go
+	cd ../cmd/inventory && wire
+	go run ../cmd/inventory/inventory.go ../cmd/inventory/wire_gen.go
 
 brelease:
 	go build -C ../cmd/inventory -ldflags "-X main.buildMode=release" -o inv-meul-app & \

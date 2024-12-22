@@ -1,7 +1,9 @@
 package main
 
 import (
-	routes "meul/inventory/internal/interfaces/rest"
+	"fmt"
+	rest "meul/inventory/internal/interfaces/rest"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +29,14 @@ func main() {
 		panic(err)
 	}
 
-	routes.RegisterRoutes(r)
+	rest.RegisterRoutes(r)
+
+	e, err := InitializeEvent("hi there!")
+	if err != nil {
+		fmt.Printf("failed to create event: %s\n", err)
+		os.Exit(2)
+	}
+	e.Start()
 
 	r.Run(port)
 }
