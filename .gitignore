@@ -3,3 +3,7 @@ go.sum
 
 build/**
 !dockerfile
+
+cmd/inventory/**
+!inventory.go
+!wire.go
