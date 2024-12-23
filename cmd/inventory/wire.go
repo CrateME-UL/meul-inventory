@@ -4,14 +4,15 @@
 package main
 
 import (
-	event "meul/inventory/internal/infrastructures"
+	"meul/inventory/internal/infrastructures"
+	event "meul/inventory/internal/infrastructures/models"
 
 	"github.com/google/wire"
 )
 
 // InitializeEvent creates an Event. It will error if the Event is staffed with
 // a grumpy greeter.
-func InitializeEvent(phrase string) (event.Event, error) {
-	wire.Build(event.NewEvent, event.NewGreeter, event.NewMessage)
+func InitializeEvent(config infrastructures.DbConfig) (event.Event, error) {
+	wire.Build(event.NewEvent, infrastructures.NewDatabaseConnection, event.NewGreeter, event.NewMessage)
 	return event.Event{}, nil
 }

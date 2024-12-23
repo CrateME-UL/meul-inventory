@@ -1,23 +1,28 @@
 package event
 
-import "fmt"
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
 
 type Message string
 
 type Greeter struct {
-	Message Message // <- adding a Message field
+	Message Message
+	DB      *gorm.DB
 }
 
 type Event struct {
-	Greeter Greeter // <- adding a Greeter field
+	Greeter Greeter
 }
 
 func NewMessage() Message {
 	return Message("Hi there!")
 }
 
-func NewGreeter(m Message) Greeter {
-	return Greeter{Message: m}
+func NewGreeter(m Message, db *gorm.DB) Greeter {
+	return Greeter{Message: m, DB: db}
 }
 
 func (g Greeter) Greet() Message {
