@@ -16,7 +16,6 @@ import (
 )
 
 func main() {
-	// Command-line flags
 	databaseURL := flag.String("db", os.Getenv("DATABASE_URL"), "Database connection URL")
 	migrationsPath := flag.String("path", "file://migrations", "Path to migrations directory")
 	command := flag.String("command", "up", "Migration command: up, down, force, version, or create")
@@ -70,7 +69,6 @@ func initializeMigration(databaseURL *string, command *string, migrationsPath *s
 		log.Fatal("DATABASE_URL must be set or provided via the -db flag")
 	}
 
-	// Initialize migration
 	m, err := migrate.New(*migrationsPath, *databaseURL)
 	if err != nil {
 		log.Fatalf("Failed to initialize migrate: %v", err)
@@ -85,24 +83,17 @@ func renameMigrationFiles(baseName string) {
 	// Get the current timestamp in the format YYYYMMDDHHMMSS
 	timestamp := time.Now().Format("20060102150405")
 
-	// Find the next available migration order
-	orderPrefix := fmt.Sprintf("%04d", getNextMigrationOrder(dir)) // Pad with leading zeros to make it 4 digits (0001, 0002, etc.)
+	orderPrefix := fmt.Sprintf("%04d", getNextMigrationOrder(dir))
 
-	// File paths for .up.sql and .down.sql
 	upFile := filepath.Join(dir, fmt.Sprintf("%s.up.sql", name))
 	downFile := filepath.Join(dir, fmt.Sprintf("%s.down.sql", name))
 
-	// New file names with the order prefix
 	newUpFile := filepath.Join(dir, fmt.Sprintf("%s_%s_%s.up.sql", orderPrefix, timestamp, name))
 	newDownFile := filepath.Join(dir, fmt.Sprintf("%s_%s_%s.down.sql", orderPrefix, timestamp, name))
 
-	// Print paths for debugging
 	fmt.Printf("Looking for files:\n - %s\n - %s\n", upFile, downFile)
-
-	// Debug: Print new file paths
 	fmt.Printf("Renaming to:\n - %s\n - %s\n", newUpFile, newDownFile)
 
-	// Rename files
 	if err := os.Rename(upFile, newUpFile); err != nil {
 		log.Fatalf("Failed to rename .up.sql file: %v", err)
 	}
@@ -110,26 +101,23 @@ func renameMigrationFiles(baseName string) {
 		log.Fatalf("Failed to rename .down.sql file: %v", err)
 	}
 
-	// Confirm renaming
 	fmt.Printf("Files renamed successfully:\n")
 	fmt.Printf("Old .up.sql: %s -> New .up.sql: %s\n", upFile, newUpFile)
 	fmt.Printf("Old .down.sql: %s -> New .down.sql: %s\n", downFile, newDownFile)
 }
 
-// Function to get the next available migration order by finding the highest number
 func getNextMigrationOrder(dir string) int {
 	files, err := os.ReadDir(dir)
 	if err != nil {
 		log.Fatalf("Failed to read migration directory: %v", err)
 	}
 
-	var highestOrder int
+	var highestOrder int = -1
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
 
-		// Look for files with the pattern <order>_<timestamp>_name.up.sql
 		matches := regexp.MustCompile(`^(\d{4})_\d{14}_.+\.up\.sql$`).FindStringSubmatch(file.Name())
 		if len(matches) > 0 {
 			order, err := strconv.Atoi(matches[1])
@@ -138,13 +126,11 @@ func getNextMigrationOrder(dir string) int {
 				continue
 			}
 
-			// Track the highest order number found
 			if order > highestOrder {
 				highestOrder = order
 			}
 		}
 	}
 
-	// Return the next order number, incremented by 1
 	return highestOrder + 1
 }
