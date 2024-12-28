@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
-	"meul/inventory/internal/infrastructures"
+	infrastructures_drivers_postgres "meul/inventory/internal/infrastructures/drivers/postgres"
 	rest "meul/inventory/internal/interfaces/rest"
 	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
-// These variables will be set using build flags
 var (
 	buildMode    string
 	port         string = ":3000"
@@ -46,7 +45,7 @@ func main() {
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
 		dbHost, dbUser, dbPassword, dbName, dbPort, dbSSLMode, dbTimeZone,
 	)
-	dbConfig := infrastructures.DbConfig{
+	dbConfig := infrastructures_drivers_postgres.DbConfig{
 		DSN: dsn,
 	}
 	e, err := InitializeEvent(dbConfig)

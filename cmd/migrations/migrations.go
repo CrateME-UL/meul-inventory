@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -10,79 +9,120 @@ import (
 	"strconv"
 	"time"
 
+	migrations_resource "meul/inventory/internal/interfaces/cli"
+
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-func main() {
-	databaseURL := flag.String("db", os.Getenv("DATABASE_URL"), "Database connection URL")
-	migrationsPath := flag.String("path", "file://migrations", "Path to migrations directory")
-	command := flag.String("command", "up", "Migration command: up, down, force, version, or create")
-	steps := flag.Int("steps", 1, "Number of steps for the 'down' command")
-	forceVersion := flag.Int("version", 0, "Version to force with the 'force' command")
-	baseName := flag.String("base", "", "Base name of the migration file (without '.up.sql' or '.down.sql')")
-	flag.Parse()
+// MigrationHandler encapsulates migration logic
+type MigrationHandler struct {
+	flags migrations_resource.MigrationFlags
+}
 
-	switch *command {
+func NewMigrationHandler(DatabaseURL string,
+	MigrationsPath string,
+	Command string,
+	Steps int,
+	ForceVersion int,
+	BaseName string) MigrationHandler {
+
+	flags := migrations_resource.MigrationFlags{
+		DatabaseURL:    DatabaseURL,
+		MigrationsPath: MigrationsPath,
+		Command:        Command,
+		Steps:          Steps,
+		ForceVersion:   ForceVersion,
+		BaseName:       BaseName,
+	}
+
+	migration_handler := MigrationHandler{
+		flags,
+	}
+
+	return migration_handler
+}
+
+// Run executes the migration command
+func (m *MigrationHandler) Run() {
+	switch m.flags.Command {
 	case "up":
-		m := initializeMigration(databaseURL, command, migrationsPath)
-		if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-			log.Fatalf("Failed to apply migrations: %v", err)
-		}
-		fmt.Println("Migrations applied successfully")
+		m.runUp()
 	case "down":
-		if *steps > 0 {
-			m := initializeMigration(databaseURL, command, migrationsPath)
-			if err := m.Steps(-*steps); err != nil {
-				log.Fatalf("Failed to rollback migrations: %v", err)
-			}
-			fmt.Printf("Rolled back %d steps successfully\n", *steps)
-		} else {
-			log.Fatal("For 'down', steps must be a positive number")
-		}
+		m.runDown()
 	case "rename":
-		if *baseName == "" {
-			log.Fatal("You must provide a base name using the -base flag")
-		}
-		renameMigrationFiles(*baseName)
+		m.runRename()
 	case "force":
-		m := initializeMigration(databaseURL, command, migrationsPath)
-		if err := m.Force(*forceVersion); err != nil {
-			log.Fatalf("Failed to force migration version: %v", err)
-		}
-		fmt.Printf("Forced migration to version %d\n", *forceVersion)
+		m.runForce()
 	case "version":
-		m := initializeMigration(databaseURL, command, migrationsPath)
-		version, dirty, err := m.Version()
-		if err != nil {
-			log.Fatalf("Failed to get migration version: %v", err)
-		}
-		fmt.Printf("Current version: %d, dirty: %v\n", version, dirty)
+		m.runVersion()
 	default:
-		log.Fatalf("Invalid command: %s. Use 'up', 'down', 'force', 'version', or 'create'", *command)
+		log.Fatalf("Invalid command: %s. Use 'up', 'down', 'force', 'version', or 'rename'", m.flags.Command)
 	}
 }
 
-func initializeMigration(databaseURL *string, command *string, migrationsPath *string) *migrate.Migrate {
-	if *databaseURL == "" && *command != "rename" {
+func (m *MigrationHandler) runUp() {
+	migration := m.initializeMigration()
+	if err := migration.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatalf("Failed to apply migrations: %v", err)
+	}
+	fmt.Println("Migrations applied successfully")
+}
+
+func (m *MigrationHandler) runDown() {
+	if m.flags.Steps > 0 {
+		migration := m.initializeMigration()
+		if err := migration.Steps(-m.flags.Steps); err != nil {
+			log.Fatalf("Failed to rollback migrations: %v", err)
+		}
+		fmt.Printf("Rolled back %d steps successfully\n", m.flags.Steps)
+	} else {
+		log.Fatal("For 'down', steps must be a positive number")
+	}
+}
+
+func (m *MigrationHandler) runRename() {
+	if m.flags.BaseName == "" {
+		log.Fatal("You must provide a base name using the -base flag")
+	}
+	renameMigrationFiles(m.flags.BaseName)
+}
+
+func (m *MigrationHandler) runForce() {
+	migration := m.initializeMigration()
+	if err := migration.Force(m.flags.ForceVersion); err != nil {
+		log.Fatalf("Failed to force migration version: %v", err)
+	}
+	fmt.Printf("Forced migration to version %d\n", m.flags.ForceVersion)
+}
+
+func (m *MigrationHandler) runVersion() {
+	migration := m.initializeMigration()
+	version, dirty, err := migration.Version()
+	if err != nil {
+		log.Fatalf("Failed to get migration version: %v", err)
+	}
+	fmt.Printf("Current version: %d, dirty: %v\n", version, dirty)
+}
+
+func (m *MigrationHandler) initializeMigration() *migrate.Migrate {
+	if m.flags.DatabaseURL == "" && m.flags.Command != "rename" {
 		log.Fatal("DATABASE_URL must be set or provided via the -db flag")
 	}
 
-	m, err := migrate.New(*migrationsPath, *databaseURL)
+	migration, err := migrate.New(m.flags.MigrationsPath, m.flags.DatabaseURL)
 	if err != nil {
 		log.Fatalf("Failed to initialize migrate: %v", err)
 	}
-	return m
+	return migration
 }
 
 func renameMigrationFiles(baseName string) {
 	dir := filepath.Dir(baseName)
 	name := filepath.Base(baseName)
 
-	// Get the current timestamp in the format YYYYMMDDHHMMSS
 	timestamp := time.Now().Format("20060102150405")
-
 	orderPrefix := fmt.Sprintf("%04d", getNextMigrationOrder(dir))
 
 	upFile := filepath.Join(dir, fmt.Sprintf("%s.up.sql", name))
@@ -133,4 +173,12 @@ func getNextMigrationOrder(dir string) int {
 	}
 
 	return highestOrder + 1
+}
+
+func main() {
+	flags := migrations_resource.NewMigrationFlags()
+	migration_handler := NewMigrationHandler(
+		flags.DatabaseURL, flags.MigrationsPath, flags.Command,
+		flags.Steps, flags.ForceVersion, flags.BaseName)
+	migration_handler.Run()
 }
