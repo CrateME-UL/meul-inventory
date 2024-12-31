@@ -8,19 +8,38 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-// MigrationHandler holds all the commands and their values
+type DatabaseURL string
+type MigrationPath string
+type Command string
+type Steps int
+type ForceVersion int
+type BaseName string
+type MigrationConfig struct {
+	DatabaseURL   DatabaseURL
+	MigrationPath MigrationPath
+	Command       Command
+	Steps         Steps
+	ForceVersion  ForceVersion
+	BaseName      BaseName
+}
+
 type MigrationHandler struct {
-	DatabaseURL           string
-	MigrationsPath        string
-	Command               string
-	Steps                 int
-	ForceVersion          int
-	BaseName              string
+	MigrationConfig       *MigrationConfig
 	MigrationFilesHandler *MigrationFilesHandler
 }
 
+func DefaultMigrationHandler(
+	config *MigrationConfig,
+	filesHandler *MigrationFilesHandler,
+) *MigrationHandler {
+	return &MigrationHandler{
+		MigrationConfig:       config,
+		MigrationFilesHandler: filesHandler,
+	}
+}
+
 func (m *MigrationHandler) initializeMigration() (*migrate.Migrate, error) {
-	return migrate.New(m.MigrationsPath, m.DatabaseURL)
+	return migrate.New(string(m.MigrationConfig.MigrationPath), string(m.MigrationConfig.DatabaseURL))
 }
 
 func (m *MigrationHandler) executeMigration(action func(*migrate.Migrate) error) error {
@@ -49,10 +68,10 @@ func (m *MigrationHandler) RunUp() error {
 
 func (m *MigrationHandler) RunStepsDown() error {
 	return m.executeMigration(func(migration *migrate.Migrate) error {
-		if err := migration.Steps(-m.Steps); err != nil {
+		if err := migration.Steps(-int(m.MigrationConfig.Steps)); err != nil {
 			return fmt.Errorf("failed to rollback migrations: %w", err)
 		}
-		fmt.Printf("Rolled back %d steps successfully\n", m.Steps)
+		fmt.Printf("Rolled back %d steps successfully\n", m.MigrationConfig.Steps)
 		return nil
 	})
 }
@@ -68,7 +87,7 @@ func (m *MigrationHandler) RunDown() error {
 }
 
 func (m *MigrationHandler) RunRename() error {
-	if err := m.MigrationFilesHandler.RenameMigrationFiles(m.BaseName); err != nil {
+	if err := m.MigrationFilesHandler.RenameMigrationFiles(string(m.MigrationConfig.BaseName)); err != nil {
 		return fmt.Errorf("failed to rename migration files: %w", err)
 	}
 	return nil
@@ -76,10 +95,10 @@ func (m *MigrationHandler) RunRename() error {
 
 func (m *MigrationHandler) RunForce() error {
 	return m.executeMigration(func(migration *migrate.Migrate) error {
-		if err := migration.Force(m.ForceVersion); err != nil {
+		if err := migration.Force(int(m.MigrationConfig.ForceVersion)); err != nil {
 			return fmt.Errorf("failed to force migration version: %w", err)
 		}
-		fmt.Printf("Forced migration to version %d\n", m.ForceVersion)
+		fmt.Printf("Forced migration to version %d\n", m.MigrationConfig.ForceVersion)
 		return nil
 	})
 }

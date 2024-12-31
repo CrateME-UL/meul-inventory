@@ -2,6 +2,7 @@ package postgres_migrations
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	migrations "meul/inventory/internal/infrastructures/drivers/postgres/migrations"
@@ -33,9 +34,13 @@ func Test_whenRunUpMigrations_thenApplyAllMigrationsFilesInOrderASC(t *testing.T
 
 	require.NoError(t, err)
 
+	migrationConfig := migrations.MigrationConfig{
+		DatabaseURL:   migrations.DatabaseURL(fmt.Sprintf("%s?sslmode=disable", dbURL)),
+		MigrationPath: migrations.MigrationPath("file://../../../../internal/infrastructures/drivers/postgres/migrations/"),
+	}
+
 	migrationHandler := migrations.MigrationHandler{
-		DatabaseURL:    dbURL + "sslmode=disable",
-		MigrationsPath: "file://../../../../internal/infrastructures/drivers/postgres/migrations/",
+		MigrationConfig: &migrationConfig,
 	}
 
 	err = migrationHandler.RunUp()

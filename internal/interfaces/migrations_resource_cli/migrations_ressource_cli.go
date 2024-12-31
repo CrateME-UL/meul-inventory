@@ -10,70 +10,90 @@ import (
 	"strings"
 )
 
-// NewMigrationFlags parses and returns MigrationFlags
-func NewMigrationFlags() postgres_migrations.MigrationHandler {
-	flags := postgres_migrations.MigrationHandler{}
-	flag.StringVar(&flags.DatabaseURL, "db", os.Getenv("DATABASE_URL"), "Database connection URL")
-	flag.StringVar(&flags.MigrationsPath, "path", "file://migrations", "Path to migrations directory")
-	flag.StringVar(&flags.Command, "command", "up", "Migration command: up, down, force, version, or rename")
-	flag.IntVar(&flags.Steps, "steps", 1, "Number of steps for the 'down' command")
-	flag.IntVar(&flags.ForceVersion, "version", 0, "Version to force with the 'force' command")
-	flag.StringVar(&flags.BaseName, "base", "", "Base name of the migration file (without '.up.sql' or '.down.sql')")
+var MigrationConfig postgres_migrations.MigrationConfig
+
+func init() {
+	var dbURL string
+	var path string
+	var command string
+	var steps int
+	var forceVersion int
+	var baseName string
+
+	// Define command-line flags
+	flag.StringVar(&dbURL, "db", os.Getenv("DATABASE_URL"), "Database connection URL")
+	flag.StringVar(&path, "path", "file://migrations", "Path to migrations directory")
+	flag.StringVar(&command, "command", "up", "Migration command: up, down, force, version, or rename")
+	flag.IntVar(&steps, "steps", 1, "Number of steps for the 'down' command")
+	flag.IntVar(&forceVersion, "version", 0, "Version to force with the 'force' command")
+	flag.StringVar(&baseName, "base", "", "Base name of the migration file (without '.up.sql' or '.down.sql')")
+
+	// Parse the flags
 	flag.Parse()
 
-	flags.BaseName = strings.Trim(flags.BaseName, "")
-	flags.Command = strings.Trim(flags.Command, "")
-	flags.MigrationsPath = strings.Trim(flags.MigrationsPath, "")
-	flags.DatabaseURL = strings.Trim(flags.DatabaseURL, "")
-
-	return flags
+	// Assign values to the global migrationConfig variable
+	MigrationConfig = postgres_migrations.MigrationConfig{
+		DatabaseURL:   postgres_migrations.DatabaseURL(strings.TrimSpace(dbURL)),
+		MigrationPath: postgres_migrations.MigrationPath(strings.TrimSpace(path)),
+		Command:       postgres_migrations.Command(strings.TrimSpace(command)),
+		Steps:         postgres_migrations.Steps(steps),
+		ForceVersion:  postgres_migrations.ForceVersion(forceVersion),
+		BaseName:      postgres_migrations.BaseName(strings.TrimSpace(baseName)),
+	}
 }
 
 // MigrationHandler encapsulates migration logic
-type MigrationHandler struct {
-	flags postgres_migrations.MigrationHandler
+type MigrationCLI struct {
+	handler postgres_migrations.MigrationHandler
+}
+
+func DefaultMigrationCLI(handler *postgres_migrations.MigrationHandler) (cli *MigrationCLI) {
+	cli = &MigrationCLI{
+		handler: *handler,
+	}
+	return cli
 }
 
 // Run executes the migration command
-func (m *MigrationHandler) Run() {
+func (m *MigrationCLI) Run() {
 	var err error
 
-	switch m.flags.Command {
+	switch m.handler.MigrationConfig.Command {
 	case "up":
 		err = validateDbFlag(m)
 
 		if err == nil {
-			err = m.flags.RunUp()
+			err = m.handler.RunUp()
 		}
 	case "down":
 		err = validateDbFlag(m)
-		if err == nil && m.flags.Steps <= 0 {
+		if err == nil && m.handler.MigrationConfig.Steps <= 0 {
 			err = fmt.Errorf("for 'down', steps must be a positive number: %v", err)
 		}
 		if err == nil {
-			err = m.flags.RunStepsDown()
+			err = m.handler.RunStepsDown()
 		}
 	case "rename":
-		if m.flags.BaseName == "" {
+		if m.handler.MigrationConfig.BaseName == "" {
 			err = fmt.Errorf("you must provide a base name using the -base flag: %v", err)
 		}
 		if err == nil {
-			err = m.flags.RunRename()
+			err = m.handler.RunRename()
 		}
 	case "force":
 		err = validateDbFlag(m)
 
 		if err == nil {
-			err = m.flags.RunForce()
+			err = m.handler.RunForce()
 		}
 	case "version":
 		err = validateDbFlag(m)
 
 		if err == nil {
-			err = m.flags.RunVersion()
+			err = m.handler.RunVersion()
 		}
 	default:
-		log.Fatalf("Invalid command: %s. Use 'up', 'down', 'force', 'version', or 'rename'", m.flags.Command)
+		log.Fatalf("Invalid command: %s. Use 'up', 'down', 'force', 'version', or 'rename'", m.handler.MigrationConfig.Command)
 	}
 
 	if err != nil {
@@ -82,38 +102,12 @@ func (m *MigrationHandler) Run() {
 
 }
 
-func validateDbFlag(m *MigrationHandler) (err error) {
+func validateDbFlag(m *MigrationCLI) (err error) {
 
-	if m.flags.DatabaseURL == "" {
+	if m.handler.MigrationConfig.DatabaseURL == "" {
 
 		return fmt.Errorf("DATABASE_URL must be set via the -db flag %v", err)
 	}
 
 	return err
-}
-
-// Create a MigrationHandler from flags
-func NewMigrationHandler(DatabaseURL string,
-	MigrationsPath string,
-	Command string,
-	Steps int,
-	ForceVersion int,
-	BaseName string,
-	MigrationFilesHandler *postgres_migrations.MigrationFilesHandler) MigrationHandler {
-
-	flags := postgres_migrations.MigrationHandler{
-		DatabaseURL:           DatabaseURL,
-		MigrationsPath:        MigrationsPath,
-		Command:               Command,
-		Steps:                 Steps,
-		ForceVersion:          ForceVersion,
-		BaseName:              BaseName,
-		MigrationFilesHandler: MigrationFilesHandler,
-	}
-
-	migration_handler := MigrationHandler{
-		flags,
-	}
-
-	return migration_handler
 }

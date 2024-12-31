@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func NewMigrationFilesHandler(migrationFilesOrderHandler *MigrationFilesOrderHandler) (migrationFilesHandler *MigrationFilesHandler) {
+func DefaultMigrationFilesHandler(migrationFilesOrderHandler *MigrationFilesOrderHandler) (migrationFilesHandler *MigrationFilesHandler) {
 
 	return &MigrationFilesHandler{
 		MigrationFilesOrderHandler: migrationFilesOrderHandler,
@@ -58,7 +58,7 @@ func (m *MigrationFilesHandler) RenameMigrationFiles(baseName string) (err error
 
 type MigrationFilesOrderHandler struct{}
 
-func NewMigrationFilesOrderHandler() (migrationFilesOrderHandler *MigrationFilesOrderHandler) {
+func DefaultMigrationFilesOrderHandler() (migrationFilesOrderHandler *MigrationFilesOrderHandler) {
 
 	return &MigrationFilesOrderHandler{}
 }

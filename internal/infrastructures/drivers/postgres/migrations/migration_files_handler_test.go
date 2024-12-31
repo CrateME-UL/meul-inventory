@@ -26,7 +26,7 @@ func TestNewMigrationFilesHandler(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotMigrationFilesHandler := NewMigrationFilesHandler(tt.args.migrationFilesOrderHandler); !reflect.DeepEqual(gotMigrationFilesHandler, tt.wantMigrationFilesHandler) {
+			if gotMigrationFilesHandler := DefaultMigrationFilesHandler(tt.args.migrationFilesOrderHandler); !reflect.DeepEqual(gotMigrationFilesHandler, tt.wantMigrationFilesHandler) {
 				t.Errorf("NewMigrationFilesHandler() = %v, want %v", gotMigrationFilesHandler, tt.wantMigrationFilesHandler)
 			}
 		})
@@ -111,7 +111,7 @@ func TestNewMigrationFilesOrderHandler(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotMigrationFilesOrderHandler := NewMigrationFilesOrderHandler(); !reflect.DeepEqual(gotMigrationFilesOrderHandler, tt.wantMigrationFilesOrderHandler) {
+			if gotMigrationFilesOrderHandler := DefaultMigrationFilesOrderHandler(); !reflect.DeepEqual(gotMigrationFilesOrderHandler, tt.wantMigrationFilesOrderHandler) {
 				t.Errorf("NewMigrationFilesOrderHandler() = %v, want %v", gotMigrationFilesOrderHandler, tt.wantMigrationFilesOrderHandler)
 			}
 		})
