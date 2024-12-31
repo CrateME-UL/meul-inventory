@@ -20,11 +20,11 @@ type MigrationFilesHandler struct {
 	MigrationFilesOrderHandler *MigrationFilesOrderHandler
 }
 
-func (m *MigrationFilesHandler) renameMigrationFiles(baseName string) (err error) {
+func (m *MigrationFilesHandler) RenameMigrationFiles(baseName string) (err error) {
 	dir := filepath.Dir(baseName)
 	name := filepath.Base(baseName)
 	timestamp := time.Now().Format("20060102150405")
-	order, err := m.MigrationFilesOrderHandler.getNextMigrationOrder(dir)
+	order, err := m.MigrationFilesOrderHandler.GetNextMigrationOrder(dir)
 
 	if err != nil {
 
@@ -63,7 +63,7 @@ func NewMigrationFilesOrderHandler() (migrationFilesOrderHandler *MigrationFiles
 	return &MigrationFilesOrderHandler{}
 }
 
-func (m *MigrationFilesOrderHandler) getNextMigrationOrder(dir string) (order int, err error) {
+func (m *MigrationFilesOrderHandler) GetNextMigrationOrder(dir string) (order int, err error) {
 	files, err := os.ReadDir(dir)
 	var highestOrder int = -1
 

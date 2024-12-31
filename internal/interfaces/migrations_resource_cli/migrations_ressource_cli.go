@@ -51,7 +51,7 @@ func (m *MigrationHandler) Run() {
 			err = fmt.Errorf("for 'down', steps must be a positive number: %v", err)
 		}
 		if err == nil {
-			err = m.flags.RunDown()
+			err = m.flags.RunStepsDown()
 		}
 	case "rename":
 		if m.flags.BaseName == "" {
