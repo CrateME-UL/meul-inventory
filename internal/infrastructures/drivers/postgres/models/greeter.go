@@ -1,4 +1,4 @@
-package event
+package models
 
 import (
 	"fmt"
@@ -6,10 +6,10 @@ import (
 	"gorm.io/gorm"
 )
 
-type Message string
+type ItemID string
 
 type Greeter struct {
-	Message Message
+	Message ItemID
 	DB      *gorm.DB
 }
 
@@ -17,15 +17,15 @@ type Event struct {
 	Greeter Greeter
 }
 
-func NewMessage() Message {
-	return Message("Hi there!")
+func NewMessage() ItemID {
+	return ItemID("Hi there!")
 }
 
-func NewGreeter(m Message, db *gorm.DB) Greeter {
+func NewGreeter(m ItemID, db *gorm.DB) Greeter {
 	return Greeter{Message: m, DB: db}
 }
 
-func (g Greeter) Greet() Message {
+func (g Greeter) Greet() ItemID {
 	return g.Message
 }
 

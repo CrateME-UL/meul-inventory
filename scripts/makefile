@@ -16,15 +16,19 @@ r:
 		../cmd/inventory/inventory.go ../cmd/inventory/wire_gen.go
 
 mrename:
-	go run -C ../cmd/migrations migrations.go -command rename -base ../../internal/infrastructures/drivers/postgres/migrations/add_items_table
+	cd ../cmd/migrations && wire
+	go run -C ../cmd/migrations migrations.go -command rename \
+	-base ../../internal/infrastructures/drivers/postgres/migrations/add_items_table
 
 mup:
+	cd ../cmd/migrations && wire
 	./manage_local_db_container.sh
 	go run -C ../cmd/migrations migrations.go wire_gen.go -command up \
 	-db "postgres://some-postgres:mysecretpassword@localhost:5432/some-postgres?sslmode=disable" \
 	-path "file://../../internal/infrastructures/drivers/postgres/migrations"
 	
 mdown:
+	cd ../cmd/migrations && wire
 	./manage_local_db_container.sh
 	go run -C ../cmd/migrations migrations.go wire_gen.go -command down -steps 1 \
 	-db "postgres://some-postgres:mysecretpassword@localhost:5432/some-postgres?sslmode=disable" \
@@ -32,6 +36,7 @@ mdown:
 
 # to define a version of the schema for the up to start at (if force 0 -> when up: skip 0 and start at 1) or to make a version clean
 mforce:
+	cd ../cmd/migrations && wire
 	./manage_local_db_container.sh
 	go run -C ../cmd/migrations migrations.go wire_gen.go -command force -version 1 \
 	-db "postgres://some-postgres:mysecretpassword@localhost:5432/some-postgres?sslmode=disable" \
