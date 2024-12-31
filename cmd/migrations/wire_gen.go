@@ -7,20 +7,29 @@
 package main
 
 import (
+	"fmt"
 	"github.com/google/wire"
+	"meul/inventory/internal/infrastructures/drivers/postgres"
 	"meul/inventory/internal/infrastructures/drivers/postgres/migrations"
 	"meul/inventory/internal/interfaces/migrations_resource_cli"
 )
 
 // Injectors from wire.go:
 
-func InitializeMigrationHandler() (*migrations_resource_cli.MigrationCLI, error) {
+func InitializeMigrationHandler() (*postgres_migrations.MigrationHandler, error) {
+	dbConfig, err := ProvideConfig()
+	if err != nil {
+		return nil, err
+	}
+	db, err := infrastructures_drivers_postgres.NewDatabaseConnection(dbConfig)
+	if err != nil {
+		return nil, err
+	}
 	migrationConfig := _wireMigrationConfigValue
 	migrationFilesOrderHandler := postgres_migrations.DefaultMigrationFilesOrderHandler()
 	migrationFilesHandler := postgres_migrations.DefaultMigrationFilesHandler(migrationFilesOrderHandler)
-	migrationHandler := postgres_migrations.DefaultMigrationHandler(migrationConfig, migrationFilesHandler)
-	migrationCLI := migrations_resource_cli.DefaultMigrationCLI(migrationHandler)
-	return migrationCLI, nil
+	migrationHandler := postgres_migrations.DefaultMigrationHandler(db, migrationConfig, migrationFilesHandler)
+	return migrationHandler, nil
 }
 
 var (
@@ -29,12 +38,34 @@ var (
 
 // wire.go:
 
-func ProvideMigrationHandler(config *postgres_migrations.MigrationConfig) postgres_migrations.MigrationHandler {
+var (
+	buildMode    string
+	port         string = ":3000"
+	trustedProxy        = []string{"127.0.0.1", "::1"}
+	dbHost       string
+	dbUser       string
+	dbPassword   string
+	dbName       string
+	dbPort       string
+	dbSSLMode    string
+	dbTimeZone   string = "America/Toronto"
+)
 
-	return postgres_migrations.MigrationHandler{
-		MigrationConfig: config,
+// ProvideConfig creates a new gorm.DB instance for PostgreSQL
+func ProvideConfig() (infrastructures_drivers_postgres.DbConfig, error) {
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
+		dbHost, dbUser, dbPassword, dbName, dbPort, dbSSLMode, dbTimeZone,
+	)
+	dbConfig := infrastructures_drivers_postgres.DbConfig{
+		DSN: dsn,
 	}
+
+	return dbConfig, nil
 }
 
 // WireSet is a set that includes all necessary providers
-var WireSet = wire.NewSet(migrations_resource_cli.DefaultMigrationCLI, postgres_migrations.DefaultMigrationFilesOrderHandler, postgres_migrations.DefaultMigrationFilesHandler, postgres_migrations.DefaultMigrationHandler, wire.Value(&migrations_resource_cli.MigrationConfig), ProvideMigrationHandler)
+var WireSet = wire.NewSet(
+
+	ProvideConfig, infrastructures_drivers_postgres.NewDatabaseConnection, migrations_resource_cli.DefaultMigrationCLI, postgres_migrations.DefaultMigrationFilesOrderHandler, postgres_migrations.DefaultMigrationFilesHandler, postgres_migrations.DefaultMigrationHandler, wire.Value(&migrations_resource_cli.MigrationConfig),
+)

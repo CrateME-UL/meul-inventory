@@ -6,6 +6,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"gorm.io/gorm"
 )
 
 type DatabaseURL string
@@ -24,15 +25,18 @@ type MigrationConfig struct {
 }
 
 type MigrationHandler struct {
+	DB                    *gorm.DB
 	MigrationConfig       *MigrationConfig
 	MigrationFilesHandler *MigrationFilesHandler
 }
 
 func DefaultMigrationHandler(
+	db *gorm.DB,
 	config *MigrationConfig,
 	filesHandler *MigrationFilesHandler,
 ) *MigrationHandler {
 	return &MigrationHandler{
+		DB:                    db,
 		MigrationConfig:       config,
 		MigrationFilesHandler: filesHandler,
 	}

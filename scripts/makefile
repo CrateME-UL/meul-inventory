@@ -23,14 +23,31 @@ mrename:
 mup:
 	cd ../cmd/migrations && wire
 	./manage_local_db_container.sh
-	go run -C ../cmd/migrations migrations.go wire_gen.go -command up \
+	go run -ldflags "\
+		-X main.buildMode=debug \
+		-X main.dbHost=localhost \
+		-X main.dbUser=some-postgres \
+		-X main.dbPassword=mysecretpassword \
+		-X main.dbName=some-postgres \
+		-X main.dbPort=5432 \
+		-X main.dbSSLMode=disable" \
+	../cmd/migrations/migrations.go ../cmd/migrations/wire_gen.go \
+	-command up \
 	-db "postgres://some-postgres:mysecretpassword@localhost:5432/some-postgres?sslmode=disable" \
 	-path "file://../../internal/infrastructures/drivers/postgres/migrations"
 	
 mdown:
 	cd ../cmd/migrations && wire
 	./manage_local_db_container.sh
-	go run -C ../cmd/migrations migrations.go wire_gen.go -command down -steps 1 \
+	go run -ldflags "\
+		-X main.buildMode=debug \
+		-X main.dbHost=localhost \
+		-X main.dbUser=some-postgres \
+		-X main.dbPassword=mysecretpassword \
+		-X main.dbName=some-postgres \
+		-X main.dbPort=5432 \
+		-X main.dbSSLMode=disable" \
+	-C ../cmd/migrations migrations.go wire_gen.go -command down -steps 1 \
 	-db "postgres://some-postgres:mysecretpassword@localhost:5432/some-postgres?sslmode=disable" \
 	-path "file://../../internal/infrastructures/drivers/postgres/migrations"
 
