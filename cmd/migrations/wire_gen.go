@@ -70,7 +70,7 @@ func ProvideConfig() (infrastructures_drivers_postgres.DbConfig, error) {
 }
 
 func ProvideLogFile() (*os.File, error) {
-	logFile, err := os.OpenFile("../internal/infrastructures/drivers/postgres/migrations/migration.log", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+	logFile, err := os.OpenFile("../internal/infrastructures/drivers/postgres/migrations/log/migration.log", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
 	if err != nil {
 		return nil, err
 	}

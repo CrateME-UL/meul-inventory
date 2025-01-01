@@ -20,6 +20,7 @@ type MigrationFilesHandler struct {
 	MigrationFilesOrderHandler *MigrationFilesOrderHandler
 }
 
+// rename migration files that uses .up.sql and .down.sql pair convention
 func (m *MigrationFilesHandler) RenameMigrationFiles(baseName string) (err error) {
 	dir := filepath.Dir(baseName)
 	name := filepath.Base(baseName)

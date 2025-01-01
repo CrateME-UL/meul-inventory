@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -92,6 +93,13 @@ func (m *MigrationHandler) RunDown() error {
 
 func (m *MigrationHandler) RunRename() error {
 	if err := m.MigrationFilesHandler.RenameMigrationFiles(string(m.MigrationConfig.BaseName)); err != nil {
+		return fmt.Errorf("failed to rename migration files: %w", err)
+	}
+	return nil
+}
+
+func (m *MigrationHandler) RunRenameFromString(baseName string) error {
+	if err := m.MigrationFilesHandler.RenameMigrationFiles(strings.TrimSuffix(baseName, ".sql")); err != nil {
 		return fmt.Errorf("failed to rename migration files: %w", err)
 	}
 	return nil

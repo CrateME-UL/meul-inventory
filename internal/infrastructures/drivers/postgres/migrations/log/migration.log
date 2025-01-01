@@ -1,0 +1,18 @@
+
+2025/01/01 02:06:24 /home/jaydutemple007/repos/go-exploration/cmd/migrations/migrations.go:17
+[8.038ms] [rows:1] SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'places' AND table_type = 'BASE TABLE'
+
+2025/01/01 02:06:24 /home/jaydutemple007/repos/go-exploration/cmd/migrations/migrations.go:17
+[16.208ms] [rows:0] CREATE TABLE "places" ("place_id" bigserial,"place_number" uuid NOT NULL,"name" varchar(30) NOT NULL,PRIMARY KEY ("place_id"),CONSTRAINT "uni_places_place_number" UNIQUE ("place_number"),CONSTRAINT "uni_places_name" UNIQUE ("name"))
+
+2025/01/01 02:06:24 /home/jaydutemple007/repos/go-exploration/cmd/migrations/migrations.go:17
+[1.484ms] [rows:1] SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'items' AND table_type = 'BASE TABLE'
+
+2025/01/01 02:06:24 /home/jaydutemple007/repos/go-exploration/cmd/migrations/migrations.go:17
+[10.517ms] [rows:0] CREATE TABLE "items" ("item_id" bigserial,"item_number" uuid NOT NULL,"name" varchar(30) NOT NULL,PRIMARY KEY ("item_id"),CONSTRAINT "uni_items_item_number" UNIQUE ("item_number"),CONSTRAINT "uni_items_name" UNIQUE ("name"))
+
+2025/01/01 02:06:24 /home/jaydutemple007/repos/go-exploration/cmd/migrations/migrations.go:17
+[1.155ms] [rows:1] SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'place_items' AND table_type = 'BASE TABLE'
+
+2025/01/01 02:06:24 /home/jaydutemple007/repos/go-exploration/cmd/migrations/migrations.go:17
+[1.934ms] [rows:0] CREATE TABLE "place_items" ("place_id" bigint NOT NULL,"item_id" bigint NOT NULL,"nb_of_items" bigint DEFAULT 0)

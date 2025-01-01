@@ -1,0 +1,1 @@
+CREATE TABLE "items" ("item_id" bigserial,"item_number" uuid NOT NULL,"name" varchar(30) NOT NULL,PRIMARY KEY ("item_id"),CONSTRAINT "uni_items_item_number" UNIQUE ("item_number"),CONSTRAINT "uni_items_name" UNIQUE ("name"))

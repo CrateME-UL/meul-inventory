@@ -36,7 +36,7 @@ func Test_whenRunUpMigrations_thenApplyAllMigrationsFilesInOrderASC(t *testing.T
 
 	migrationConfig := migrations.MigrationConfig{
 		DatabaseURL:   migrations.DatabaseURL(fmt.Sprintf("%ssslmode=disable", dbURL)),
-		MigrationPath: migrations.MigrationPath("file://../../../../internal/infrastructures/drivers/postgres/migrations/"),
+		MigrationPath: migrations.MigrationPath("file://../../../../internal/infrastructures/drivers/postgres/migrations/sql"),
 	}
 
 	migrationHandler := migrations.MigrationHandler{

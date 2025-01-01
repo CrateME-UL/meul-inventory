@@ -1,0 +1,1 @@
+CREATE TABLE "places" ("place_id" bigserial,"place_number" uuid NOT NULL,"name" varchar(30) NOT NULL,PRIMARY KEY ("place_id"),CONSTRAINT "uni_places_place_number" UNIQUE ("place_number"),CONSTRAINT "uni_places_name" UNIQUE ("name"))
