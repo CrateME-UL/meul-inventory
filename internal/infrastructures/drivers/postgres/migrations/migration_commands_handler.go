@@ -1,4 +1,4 @@
-package postgres_migrations
+package migrations
 
 import (
 	"fmt"

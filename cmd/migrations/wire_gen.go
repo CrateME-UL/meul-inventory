@@ -12,23 +12,28 @@ import (
 	"meul/inventory/internal/infrastructures/drivers/postgres"
 	"meul/inventory/internal/infrastructures/drivers/postgres/migrations"
 	"meul/inventory/internal/interfaces/migrations_resource_cli"
+	"os"
 )
 
 // Injectors from wire.go:
 
-func InitializeMigrationHandler() (*postgres_migrations.MigrationHandler, error) {
+func InitializeMigrationHandler() (*migrations.MigrationHandler, error) {
 	dbConfig, err := ProvideConfig()
 	if err != nil {
 		return nil, err
 	}
-	db, err := infrastructures_drivers_postgres.NewDatabaseConnection(dbConfig)
+	file, err := ProvideLogFile()
+	if err != nil {
+		return nil, err
+	}
+	db, err := infrastructures_drivers_postgres.NewDatabaseConnectionWithMigrationLogger(dbConfig, file)
 	if err != nil {
 		return nil, err
 	}
 	migrationConfig := _wireMigrationConfigValue
-	migrationFilesOrderHandler := postgres_migrations.DefaultMigrationFilesOrderHandler()
-	migrationFilesHandler := postgres_migrations.DefaultMigrationFilesHandler(migrationFilesOrderHandler)
-	migrationHandler := postgres_migrations.DefaultMigrationHandler(db, migrationConfig, migrationFilesHandler)
+	migrationFilesOrderHandler := migrations.DefaultMigrationFilesOrderHandler()
+	migrationFilesHandler := migrations.DefaultMigrationFilesHandler(migrationFilesOrderHandler)
+	migrationHandler := migrations.DefaultMigrationHandler(db, migrationConfig, migrationFilesHandler)
 	return migrationHandler, nil
 }
 
@@ -64,8 +69,17 @@ func ProvideConfig() (infrastructures_drivers_postgres.DbConfig, error) {
 	return dbConfig, nil
 }
 
+func ProvideLogFile() (*os.File, error) {
+	logFile, err := os.OpenFile("../internal/infrastructures/drivers/postgres/migrations/migration.log", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+	if err != nil {
+		return nil, err
+	}
+	return logFile, nil
+}
+
 // WireSet is a set that includes all necessary providers
 var WireSet = wire.NewSet(
 
-	ProvideConfig, infrastructures_drivers_postgres.NewDatabaseConnection, migrations_resource_cli.DefaultMigrationCLI, postgres_migrations.DefaultMigrationFilesOrderHandler, postgres_migrations.DefaultMigrationFilesHandler, postgres_migrations.DefaultMigrationHandler, wire.Value(&migrations_resource_cli.MigrationConfig),
+	ProvideConfig,
+	ProvideLogFile, infrastructures_drivers_postgres.NewDatabaseConnectionWithMigrationLogger, migrations_resource_cli.DefaultMigrationCLI, migrations.DefaultMigrationFilesOrderHandler, migrations.DefaultMigrationFilesHandler, migrations.DefaultMigrationHandler, wire.Value(&migrations_resource_cli.MigrationConfig),
 )

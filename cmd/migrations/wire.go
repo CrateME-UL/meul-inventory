@@ -8,6 +8,7 @@ import (
 	infrastructures_drivers_postgres "meul/inventory/internal/infrastructures/drivers/postgres"
 	postgres_migrations "meul/inventory/internal/infrastructures/drivers/postgres/migrations"
 	migrations_resource "meul/inventory/internal/interfaces/migrations_resource_cli"
+	"os"
 
 	"github.com/google/wire"
 )
@@ -38,19 +39,20 @@ func ProvideConfig() (infrastructures_drivers_postgres.DbConfig, error) {
 	return dbConfig, nil
 }
 
-// ProvideMigrationHandler creates a MigrationHandler based on the provided DB and config
-// func ProvideMigrationHandler(db *gorm.DB, config *postgres_migrations.MigrationConfig) *postgres_migrations.MigrationHandler {
-// 	return &postgres_migrations.MigrationHandler{
-// 		DB:              db,
-// 		MigrationConfig: config,
-// 	}
-// }
+func ProvideLogFile() (*os.File, error) {
+	logFile, err := os.OpenFile("../internal/infrastructures/drivers/postgres/migrations/migration.log", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+	if err != nil {
+		return nil, err
+	}
+	return logFile, nil
+}
 
 // WireSet is a set that includes all necessary providers
 var WireSet = wire.NewSet(
 	// Existing providers
 	ProvideConfig,
-	infrastructures_drivers_postgres.NewDatabaseConnection,
+	ProvideLogFile,
+	infrastructures_drivers_postgres.NewDatabaseConnectionWithMigrationLogger,
 	migrations_resource.DefaultMigrationCLI,
 	postgres_migrations.DefaultMigrationFilesOrderHandler,
 	postgres_migrations.DefaultMigrationFilesHandler,
