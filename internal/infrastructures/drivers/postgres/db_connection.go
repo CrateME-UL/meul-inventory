@@ -1,4 +1,4 @@
-package infrastructures_drivers_postgres
+package postgres
 
 import (
 	"log"

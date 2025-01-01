@@ -1,4 +1,4 @@
-package routes
+package rest
 
 import (
 	"meul/inventory/internal/interfaces/rest/health"

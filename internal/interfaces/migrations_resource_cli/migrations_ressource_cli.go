@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	postgres_migrations "meul/inventory/internal/infrastructures/drivers/postgres/migrations"
+	"meul/inventory/internal/infrastructures/drivers/postgres/models"
 	"strings"
 )
 
@@ -73,6 +74,8 @@ func (m *MigrationCLI) Run() {
 		if err == nil {
 			err = m.handler.RunRename()
 		}
+	case "auto_migrate":
+		err = m.handler.AutoMigrate(models.AllModels)
 	case "force":
 		err = m.handler.RunForce()
 	case "version":
