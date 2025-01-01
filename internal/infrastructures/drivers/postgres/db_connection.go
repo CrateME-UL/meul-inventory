@@ -2,7 +2,9 @@ package infrastructures_drivers_postgres
 
 import (
 	"log"
+	"net/url"
 	"os"
+	"strings"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -43,4 +45,48 @@ func NewDatabaseConnectionWithMigrationLogger(config DbConfig, logFile *os.File)
 	}
 
 	return db, nil
+}
+
+func DSNToConnectionString(dsn string) string {
+	var connectionStringBuilder strings.Builder
+	dsnParts := strings.Fields(dsn)
+	dsnMap := make(map[string]string)
+
+	for _, part := range dsnParts {
+		kv := strings.SplitN(part, "=", 2)
+		if len(kv) == 2 {
+			dsnMap[kv[0]] = kv[1]
+		}
+	}
+
+	if user, ok := dsnMap["user"]; ok {
+		connectionStringBuilder.WriteString("postgres://" + user)
+	}
+	if password, ok := dsnMap["password"]; ok {
+		connectionStringBuilder.WriteString(":" + password + "@")
+	}
+	if host, ok := dsnMap["host"]; ok {
+		connectionStringBuilder.WriteString(host)
+	}
+	if port, ok := dsnMap["port"]; ok {
+		connectionStringBuilder.WriteString(":" + port)
+	}
+	if dbname, ok := dsnMap["dbname"]; ok {
+		connectionStringBuilder.WriteString("/" + dbname)
+	}
+
+	options := url.Values{}
+
+	for key, value := range dsnMap {
+
+		if key != "user" && key != "password" && key != "host" && key != "port" && key != "dbname" {
+			options.Add(key, value)
+		}
+	}
+
+	if encodedOptions := options.Encode(); encodedOptions != "" {
+		connectionStringBuilder.WriteString("?" + encodedOptions)
+	}
+	connectionString := connectionStringBuilder.String()
+	return connectionString
 }

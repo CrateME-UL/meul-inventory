@@ -2,7 +2,6 @@ package migrations
 
 import (
 	"fmt"
-	"net/url"
 	"strings"
 
 	infrastructures_drivers_postgres "meul/inventory/internal/infrastructures/drivers/postgres"
@@ -49,46 +48,7 @@ func DefaultMigrationHandler(
 
 // initialize migration by converting the DSN to a connection string
 func (m *MigrationHandler) initializeMigration() (*migrate.Migrate, error) {
-	var connectionStringBuilder strings.Builder
-	dsnParts := strings.Fields(m.DbConfig.DSN)
-	dsnMap := make(map[string]string)
-
-	for _, part := range dsnParts {
-		kv := strings.SplitN(part, "=", 2)
-		if len(kv) == 2 {
-			dsnMap[kv[0]] = kv[1]
-		}
-	}
-
-	if user, ok := dsnMap["user"]; ok {
-		connectionStringBuilder.WriteString("postgres://" + user)
-	}
-	if password, ok := dsnMap["password"]; ok {
-		connectionStringBuilder.WriteString(":" + password + "@")
-	}
-	if host, ok := dsnMap["host"]; ok {
-		connectionStringBuilder.WriteString(host)
-	}
-	if port, ok := dsnMap["port"]; ok {
-		connectionStringBuilder.WriteString(":" + port)
-	}
-	if dbname, ok := dsnMap["dbname"]; ok {
-		connectionStringBuilder.WriteString("/" + dbname)
-	}
-
-	options := url.Values{}
-
-	for key, value := range dsnMap {
-
-		if key != "user" && key != "password" && key != "host" && key != "port" && key != "dbname" {
-			options.Add(key, value)
-		}
-	}
-
-	if encodedOptions := options.Encode(); encodedOptions != "" {
-		connectionStringBuilder.WriteString("?" + encodedOptions)
-	}
-	connectionString := connectionStringBuilder.String()
+	connectionString := infrastructures_drivers_postgres.DSNToConnectionString(m.DbConfig.DSN)
 
 	return migrate.New(string(m.MigrationConfig.MigrationPath), connectionString)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	infrastructures_drivers_postgres "meul/inventory/internal/infrastructures/drivers/postgres"
 	migrations "meul/inventory/internal/infrastructures/drivers/postgres/migrations"
 
 	"github.com/stretchr/testify/require"
@@ -14,14 +15,14 @@ import (
 
 func Test_whenRunUpMigrations_thenApplyAllMigrationsFilesInOrderASC(t *testing.T) {
 	ctx := context.Background()
-	dbname := "testdb"
+	dBName := "testdb"
 	user := "testuser"
 	password := "testpassword"
 
 	ctr, err := postgres.Run(
 		ctx,
 		"postgres:16-alpine",
-		postgres.WithDatabase(dbname),
+		postgres.WithDatabase(dBName),
 		postgres.WithUsername(user),
 		postgres.WithPassword(password),
 		postgres.BasicWaitStrategies(),
@@ -30,16 +31,25 @@ func Test_whenRunUpMigrations_thenApplyAllMigrationsFilesInOrderASC(t *testing.T
 	require.NoError(t, err)
 	defer testcontainers.CleanupContainer(t, ctr)
 
-	dbURL, err := ctr.ConnectionString(ctx)
+	mappedPort, err := ctr.MappedPort(ctx, "5432")
+	require.NoError(t, err)
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
+		"localhost", user, password, dBName, mappedPort.Port(), "disable",
+	)
+	dbConfig := infrastructures_drivers_postgres.DbConfig{
+		DSN: dsn,
+	}
 
 	require.NoError(t, err)
 
 	migrationConfig := migrations.MigrationConfig{
-		DatabaseURL:   migrations.DatabaseURL(fmt.Sprintf("%ssslmode=disable", dbURL)),
+
 		MigrationPath: migrations.MigrationPath("file://../../../../internal/infrastructures/drivers/postgres/migrations/sql"),
 	}
 
 	migrationHandler := migrations.MigrationHandler{
+		DbConfig:        dbConfig,
 		MigrationConfig: &migrationConfig,
 	}
 
