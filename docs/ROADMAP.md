@@ -1,0 +1,3 @@
+- [ ] CLI for SQL migrations
+- [ ] CLI for generating SQL migrations files
+- [x] Medium Migrations Tests Up and Down

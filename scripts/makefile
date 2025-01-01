@@ -33,8 +33,7 @@ mup:
 		-X main.dbSSLMode=disable" \
 	../cmd/migrations/migrations.go ../cmd/migrations/wire_gen.go \
 	-command up \
-	-db "postgres://some-postgres:mysecretpassword@localhost:5432/some-postgres?sslmode=disable" \
-	-path "file://../../internal/infrastructures/drivers/postgres/migrations/sql"
+	-path "file://../internal/infrastructures/drivers/postgres/migrations/sql"
 	
 mdown:
 	cd ../cmd/migrations && wire
@@ -47,9 +46,10 @@ mdown:
 		-X main.dbName=some-postgres \
 		-X main.dbPort=5432 \
 		-X main.dbSSLMode=disable" \
-	-C ../cmd/migrations migrations.go wire_gen.go -command down -steps 1 \
-	-db "postgres://some-postgres:mysecretpassword@localhost:5432/some-postgres?sslmode=disable" \
-	-path "file://../../internal/infrastructures/drivers/postgres/migrations/sql"
+	../cmd/migrations/migrations.go ../cmd/migrations/wire_gen.go \
+	-command down \
+	-steps 1 \
+	-path "file://../internal/infrastructures/drivers/postgres/migrations/sql"
 
 # to define a version of the schema for the up to start at (if force 0 -> when up: skip 0 and start at 1) or to make a version clean
 mforce:

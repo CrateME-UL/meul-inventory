@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func CatchMigrationsToSQLFiles() ([]string, error) {
+func (m *MigrationHandler) CatchMigrationsToSQLFiles() ([]string, error) {
 	inputFile := "../internal/infrastructures/drivers/postgres/migrations/log/migration.log"
 	outputDir := "../internal/infrastructures/drivers/postgres/migrations/sql"
 	var outputFiles []string

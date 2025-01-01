@@ -17,7 +17,7 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeMigrationHandler() (*migrations.MigrationHandler, error) {
+func InitializeMigrationHandler() (*migrations_resource_cli.MigrationCLI, error) {
 	dbConfig, err := ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -33,8 +33,9 @@ func InitializeMigrationHandler() (*migrations.MigrationHandler, error) {
 	migrationConfig := _wireMigrationConfigValue
 	migrationFilesOrderHandler := migrations.DefaultMigrationFilesOrderHandler()
 	migrationFilesHandler := migrations.DefaultMigrationFilesHandler(migrationFilesOrderHandler)
-	migrationHandler := migrations.DefaultMigrationHandler(db, migrationConfig, migrationFilesHandler)
-	return migrationHandler, nil
+	migrationHandler := migrations.DefaultMigrationHandler(dbConfig, db, migrationConfig, migrationFilesHandler)
+	migrationCLI := migrations_resource_cli.DefaultMigrationCLI(migrationHandler)
+	return migrationCLI, nil
 }
 
 var (

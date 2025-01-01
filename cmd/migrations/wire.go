@@ -59,10 +59,9 @@ var WireSet = wire.NewSet(
 	postgres_migrations.DefaultMigrationHandler,
 	// Wire the MigrationConfig from the global variable
 	wire.Value(&migrations_resource.MigrationConfig),
-	// ProvideMigrationHandler,
 )
 
-func InitializeMigrationHandler() (*postgres_migrations.MigrationHandler, error) {
+func InitializeMigrationHandler() (*migrations_resource.MigrationCLI, error) {
 	wire.Build(WireSet)
 
 	return nil, nil
