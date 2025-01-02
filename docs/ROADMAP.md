@@ -1,3 +1,4 @@
-- [ ] CLI for SQL migrations
-- [ ] CLI for generating SQL migrations files
+- [ ] CLI for SQL migrations (add tests)
+- [ ] CLI for generating SQL migrations files (add tests)
 - [x] Medium Migrations Tests Up and Down
+- [ ] HTMX integration

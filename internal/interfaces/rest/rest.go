@@ -1,4 +1,4 @@
-// Package rest provides ...
+// Package rest provides the http rest api
 package rest
 
 import (
@@ -14,7 +14,10 @@ type RestConfig struct {
 	Port         string
 }
 
-func DefaultRestServer(restConfig RestConfig) (*gin.Engine, error) {
+// RouteRegisterFunc is a function type for registering routes
+type RouteRegisterFunc func(*gin.Engine)
+
+func DefaultRestServer(restConfig RestConfig, routeRegisterFuncs []RouteRegisterFunc) (*gin.Engine, error) {
 	if restConfig.BuildMode == gin.ReleaseMode {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
@@ -31,7 +34,10 @@ func DefaultRestServer(restConfig RestConfig) (*gin.Engine, error) {
 		os.Exit(2)
 	}
 
-	RegisterRoutes(r)
+	// Execute all registration functions to register routes
+	for _, registeredFunction := range routeRegisterFuncs {
+		registeredFunction(r)
+	}
 
 	return r, nil
 }

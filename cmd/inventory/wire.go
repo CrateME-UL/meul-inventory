@@ -6,11 +6,13 @@ package main
 import (
 	"fmt"
 	"meul/inventory/internal/infrastructures/drivers/postgres"
+	"meul/inventory/internal/infrastructures/drivers/postgres/models"
 	"meul/inventory/internal/interfaces/rest"
+	"meul/inventory/internal/interfaces/rest/items"
+	"meul/inventory/internal/interfaces/rest/ping"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
-	"gorm.io/gorm"
 )
 
 var (
@@ -28,7 +30,6 @@ var (
 
 type App struct {
 	HttpServer *gin.Engine
-	DBClient   *gorm.DB
 }
 
 // ProvideDBConfig creates a DbConfig for PostgreSQL
@@ -53,10 +54,17 @@ func ProvideRestConfig() (rest.RestConfig, error) {
 	}, nil
 }
 
-func DefaultApp(HttpServer *gin.Engine, DBClient *gorm.DB) (*App, error) {
+// ProvideServerDependencies provides the dependencies for the server in a callback fashion
+func ProvideServerDependencies(itemDAO *models.ItemDAO) []rest.RouteRegisterFunc {
+	return []rest.RouteRegisterFunc{
+		func(r *gin.Engine) { ping.RegisterPing(r) },
+		func(r *gin.Engine) { items.RegisterItems(r, itemDAO) },
+	}
+}
+
+func DefaultApp(HttpServer *gin.Engine) (*App, error) {
 	return &App{
 		HttpServer: HttpServer,
-		DBClient:   DBClient,
 	}, nil
 }
 
@@ -64,6 +72,8 @@ func DefaultApp(HttpServer *gin.Engine, DBClient *gorm.DB) (*App, error) {
 var WireSet = wire.NewSet(
 	ProvideDBConfig,
 	ProvideRestConfig,
+	ProvideServerDependencies,
+	models.NewItemDAO,
 	postgres.NewDatabaseConnection,
 	rest.DefaultRestServer,
 	DefaultApp,

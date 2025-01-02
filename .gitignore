@@ -7,3 +7,7 @@ build/**
 cmd/inventory/**
 !inventory.go
 !wire.go
+
+cmd/migrations/**
+!migrations.go
+!wire.go
