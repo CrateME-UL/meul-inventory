@@ -10,6 +10,7 @@ import (
 	"meul/inventory/internal/interfaces/rest"
 	"meul/inventory/internal/interfaces/rest/items"
 	"meul/inventory/internal/interfaces/rest/ping"
+	"meul/inventory/internal/interfaces/rest/root"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
@@ -57,6 +58,7 @@ func ProvideRestConfig() (rest.RestConfig, error) {
 // ProvideServerDependencies provides the dependencies for the server in a callback fashion
 func ProvideServerDependencies(itemDAO *models.ItemDAO) []rest.RouteRegisterFunc {
 	return []rest.RouteRegisterFunc{
+		func(r *gin.Engine) { root.RegisterRoot(r, itemDAO) },
 		func(r *gin.Engine) { ping.RegisterPing(r) },
 		func(r *gin.Engine) { items.RegisterItems(r, itemDAO) },
 	}

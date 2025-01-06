@@ -77,7 +77,7 @@ func (m *MigrationHandler) RunUp() error {
 	})
 }
 
-func (m *MigrationHandler) AutoMigrate(dst ...interface{}) error {
+func (m *MigrationHandler) AutoMigrate(dst ...any) error {
 	err := m.DB.AutoMigrate(dst...)
 	if err != nil {
 		return fmt.Errorf("failed to AutoMigrate models: %w", err)

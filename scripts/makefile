@@ -64,6 +64,8 @@ bmigrations:
 	mv ../cmd/migrations/migrations ../build/migrations
 
 brelease:
+	make i
+	cd ../cmd/inventory && wire
 	go build -C ../cmd/inventory -ldflags "\
 		-X main.buildMode=release \
 		-X main.dbHost=localhost \
@@ -72,10 +74,11 @@ brelease:
 		-X main.dbName=some-postgres \
 		-X main.dbPort=5432 \
 		-X main.dbSSLMode=disable" \
-		-o inv-meul-app & \
-	mv ../cmd/inventory/inv-meul-app ../build/inv-meul-app
+		-o inv-meul-app inventory.go wire_gen.go && mv ../cmd/inventory/inv-meul-app ../build/inv-meul-app
 
 bdebug:
+	make i
+	cd ../cmd/inventory && wire
 	go build -C ../cmd/inventory -ldflags "\
 		-X main.buildMode=debug \
 		-X main.dbHost=localhost \
@@ -84,5 +87,9 @@ bdebug:
 		-X main.dbName=some-postgres \
 		-X main.dbPort=5432 \
 		-X main.dbSSLMode=disable" \
-		-o inv-meul-app & \
-	mv ../cmd/inventory/inv-meul-app ../build/inv-meul-app
+		-o inv-meul-app inventory.go wire_gen.go && mv ../cmd/inventory/inv-meul-app ../build/inv-meul-app
+
+# live server to enable hot reload on the html templates
+air:
+	./manage_local_db_container.sh
+	cd ../web && air

@@ -3,6 +3,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 )
 
@@ -36,4 +37,14 @@ func (i ItemDAO) GetAllItems() ([]Item, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+// MockGormDB is a mock for ItemDAO to mimic transaction related to Item in the database
+type MockItemDAO struct {
+	mock.Mock
+}
+
+func (m *MockItemDAO) GetAllItems() ([]Item, error) {
+	args := m.Called()
+	return args.Get(0).([]Item), args.Error(1)
 }
