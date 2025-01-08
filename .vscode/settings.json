@@ -1,0 +1,43 @@
+{
+  // enable globally (here: format on save)
+  "editor.formatOnSave": true,
+  // enable per-language (here: Prettier as formatter)
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  //try to fix lint on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  //colors :)
+  "peacock.color": "#8d37f5",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#03cbed",
+    "activityBar.background": "#03cbed",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#dc03bd",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#e7e7e799",
+    "sash.hoverBorder": "#03cbed",
+    "statusBar.background": "#02a0bb",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#03cbed",
+    "statusBarItem.remoteBackground": "#02a0bb",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "titleBar.activeBackground": "#02a0bb",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#02a0bb99",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  "peacock.remoteColor": "#02a0bb"
+}
