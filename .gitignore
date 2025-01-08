@@ -11,3 +11,8 @@ cmd/inventory/**
 cmd/migrations/**
 !migrations.go
 !wire.go
+
+node_modules
+package-lock.json
+static
+

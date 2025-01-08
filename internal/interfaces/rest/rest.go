@@ -39,5 +39,8 @@ func DefaultRestServer(restConfig RestConfig, routeRegisterFuncs []RouteRegister
 		registeredFunction(r)
 	}
 
+	//setup the static directory from the web directory as root
+	r.Static("/static", "./static")
+
 	return r, nil
 }

@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"meul/inventory/internal/infrastructures/drivers/postgres/models"
+	"meul/inventory/test/fixtures"
 	"strings"
 	"testing"
 
@@ -89,12 +90,7 @@ func Test_todoItemsAreShown(t *testing.T) {
 	// Render the template with items from the DAO
 	buf := renderTemplate("index.html", mockItems)
 
-	// Parse the HTML with goquery
-	document, err := goquery.NewDocumentFromReader(bytes.NewReader(buf.Bytes()))
-	if err != nil {
-		t.Fatalf("Error rendering template: %v", err)
-	}
-
+	document := parseHtml(t, buf)
 	// Assert there are two <li> elements inside the <ul class="todo-list">
 	selection := document.Find("ul.todo-list li")
 	assert.Equal(t, 2, selection.Length())
@@ -109,21 +105,22 @@ func Test_todoItemsAreShown(t *testing.T) {
 	// mockDAO.AssertExpectations(t)
 }
 
-// func Test_completedItemsGetCompletedClass(t *testing.T) {
-// 	// Create mock items
-// 	mockItems := []models.Item{
-// 		{ItemID: 1, ItemNumber: uuid.New(), Name: "that item"},
-// 		{ItemID: 2, ItemNumber: uuid.New(), Name: "another item"},
-// 	}
+func Test_selectedItemsGetSelectedClass(t *testing.T) {
+	mockItems := []models.Item{
+		fixtures.NewItemFixture(
+			fixtures.WithName("that item"),
+			fixtures.WithSelected(true),
+		),
+		fixtures.NewItemFixture(
+			fixtures.WithName("another item"),
+			fixtures.WithSelected(false),
+		),
+	}
 
-// 	// Mock the DAO
-// 	// mockDAO := &models.MockItemDAO{}
-// 	// mockDAO.On("GetAllItems").Return(mockItems, nil)
+	buf := renderTemplate("index.html", mockItems)
 
-// 	buf := renderTemplate("index.html", mockItems)
-
-// 	document := parseHtml(t, buf)
-// 	selection := document.Find("ul.todo-list li.completed")
-// 	assert.Equal(t, 1, selection.Size())
-// 	assert.Equal(t, "Bar", text(selection.Nodes[0]))
-// }
+	document := parseHtml(t, buf)
+	selection := document.Find("ul.todo-list li.selected")
+	assert.Equal(t, 1, selection.Size())
+	assert.Equal(t, "that item", text(selection.Nodes[0]))
+}

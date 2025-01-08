@@ -93,3 +93,9 @@ bdebug:
 air:
 	./manage_local_db_container.sh
 	cd ../web && air
+
+static:
+	npm --prefix ../web install
+	npm --prefix ../web run build
+	cp ../web/node_modules/htmx.org/dist/htmx.min.js ../web/static/js/htmx.min.js
+

@@ -14,6 +14,7 @@ require (
 require (
 	github.com/PuerkitoBio/goquery v1.10.1
 	github.com/golang-migrate/migrate/v4 v4.18.1
+	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0
 )
 
 require (
