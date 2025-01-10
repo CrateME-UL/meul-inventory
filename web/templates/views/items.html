@@ -1,0 +1,36 @@
+{{define "views/items"}}
+<!doctype html>
+<html lang="en">
+  <body>
+    <div>
+      <form
+        hx-post="/items"
+        hx-target="#items-list"
+        hx-swap="beforeend"
+        hx-trigger="submit"
+      >
+        <label for="name">Item Name</label>
+        <input
+          class="outline"
+          type="text"
+          name="name"
+          id="name"
+          required
+        />
+        <button
+          type="submit"
+          class="rounded-full bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+        >
+          Add Item
+        </button>
+      </form>
+    </div>
+    <div>
+      <ul class="todo-list" id="items-list">
+        {{ range . }} {{template "components/item" .}} {{ end }}
+      </ul>
+    </div>
+  </body>
+</html>
+
+{{end}}

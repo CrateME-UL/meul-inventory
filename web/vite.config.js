@@ -1,18 +1,17 @@
 import { defineConfig } from 'vite';
 import { fileURLToPath, URL } from 'node:url';
-import path, { resolve } from 'node:path';
+import { resolve } from 'node:path';
 
-const specificViewPath = "templates";
+const specificViewPath = 'templates';
 
 export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
     },
   },
   server: {
-    hmr: true
+    hmr: true,
   },
   base: '/',
   build: {
@@ -23,11 +22,14 @@ export default defineConfig({
       output: {
         dir: './static',
         entryFileNames: `js/[name].js`,
-        assetFileNames: assetInfo => {
+        assetFileNames: (assetInfo) => {
           if (assetInfo.name?.endsWith('.css')) {
             return `css/[name].[ext]`;
           }
-          if (assetInfo.name?.endsWith('.woff') || assetInfo.name?.endsWith('.woff2')) {
+          if (
+            assetInfo.name?.endsWith('.woff') ||
+            assetInfo.name?.endsWith('.woff2')
+          ) {
             return 'fonts/[name].[ext]';
           }
           return `${specificViewPath}/[name].[ext]`;

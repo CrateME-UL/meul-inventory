@@ -40,6 +40,6 @@ func (tr *templateRender) WriteContentType(w http.ResponseWriter) {
 
 func NewTemplate() *Templates {
 	return &Templates{
-		templates: template.Must(template.ParseGlob("../web/views/*.html")),
+		templates: template.Must(template.ParseGlob("../web/templates/**/*")),
 	}
 }

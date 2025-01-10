@@ -98,6 +98,7 @@ static:
 	npm --prefix ../web install
 	npm --prefix ../web run build
 	cp ../web/node_modules/htmx.org/dist/htmx.min.js ../web/static/js/htmx.min.js
+	make tw
 
 tw:
 	cd ../web && npx tailwindcss -i ./src/input.css -o ./static/css/output.css --watch
