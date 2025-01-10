@@ -2,3 +2,8 @@
 - [ ] CLI for generating SQL migrations files (add tests)
 - [x] Medium Migrations Tests Up and Down
 - [ ] HTMX integration
+  - [ ] add views for the pages
+  - [ ] add templates, the parts of the views
+  - [ ] name the templates to organize the application
+  - [ ] render the views and the templates on change (http request, response) to transform go templates to raw html
+  - [ ] use HTMX to perform REST Verbs and some DOM manipulations

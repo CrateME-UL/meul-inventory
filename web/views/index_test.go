@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"io"
 	"meul/inventory/internal/infrastructures/drivers/postgres/models"
-	"meul/inventory/test/fixtures"
 	"strings"
 	"testing"
 
@@ -103,24 +102,4 @@ func Test_todoItemsAreShown(t *testing.T) {
 
 	// Verify mock expectations
 	// mockDAO.AssertExpectations(t)
-}
-
-func Test_selectedItemsGetSelectedClass(t *testing.T) {
-	mockItems := []models.Item{
-		fixtures.NewItemFixture(
-			fixtures.WithName("that item"),
-			fixtures.WithSelected(true),
-		),
-		fixtures.NewItemFixture(
-			fixtures.WithName("another item"),
-			fixtures.WithSelected(false),
-		),
-	}
-
-	buf := renderTemplate("index.html", mockItems)
-
-	document := parseHtml(t, buf)
-	selection := document.Find("ul.todo-list li.selected")
-	assert.Equal(t, 1, selection.Size())
-	assert.Equal(t, "that item", text(selection.Nodes[0]))
 }

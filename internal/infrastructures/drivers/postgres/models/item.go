@@ -15,7 +15,6 @@ type Item struct {
 	ItemID     uint      `gorm:"primaryKey"`                // Primary Key
 	ItemNumber uuid.UUID `gorm:"type:uuid;unique;not null"` // Unique Identifier
 	Name       string    `gorm:"unique;size:30;not null;"`  // Name of the Item
-	Selected   bool
 }
 
 // GenerateItemFixture generates a single Item fixture with randomized or default data
@@ -24,7 +23,6 @@ func GenerateItemFixture() Item {
 		ItemID:     uint(rand.Intn(1000)),    // Random ItemID
 		ItemNumber: uuid.New(),               // Random UUID
 		Name:       generateRandomString(10), // Random 10-character string
-		Selected:   rand.Intn(2) == 0,        // Randomly true or false
 	}
 }
 

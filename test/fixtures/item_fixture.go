@@ -20,7 +20,6 @@ func NewItemFixture(options ...Option) models.Item {
 		ItemID:     uint(rand.Intn(1000)),    // Random ItemID
 		ItemNumber: uuid.New(),               // Random UUID
 		Name:       generateRandomString(10), // Random 10-character string
-		Selected:   rand.Intn(2) == 0,        // Randomly true or false
 	}
 
 	// Apply options
@@ -49,12 +48,5 @@ func WithItemNumber(itemNumber uuid.UUID) Option {
 func WithName(name string) Option {
 	return func(i *models.Item) {
 		i.Name = name
-	}
-}
-
-// WithSelected sets the Selected field
-func WithSelected(selected bool) Option {
-	return func(i *models.Item) {
-		i.Selected = selected
 	}
 }

@@ -8,7 +8,7 @@
     />
     <title>Inventaire • MonÉquilibreUL</title>
 
-    <!-- material icons related imports -->
+    <!-- Material icons related imports -->
     <link rel="stylesheet" href="/static/css/main.css" />
     <script
       type="module"
@@ -25,31 +25,50 @@
       rel="stylesheet"
       href="/static/fonts/material-icons-latin-400-normal.woff2"
     />
-    <!-- tailwind related imports -->
+    <!-- Tailwind related imports -->
     <link href="/static/css/output.css" rel="stylesheet" />
   </head>
   <body>
     <div>
       <h1 class="text-3xl font-bold underline">Hello world!</h1>
     </div>
+
+    <!-- Form to add new item -->
     <div>
-      <label for="toggle-all">Mark all as complete</label>
-      <ul class="todo-list">
+      <form
+        hx-post="/items"
+        hx-target="#items-list"
+        hx-swap="beforeend"
+        hx-trigger="submit"
+      >
+        <label for="name">Item Name</label>
+        <input
+          class="outline"
+          type="text"
+          name="name"
+          id="name"
+          required
+        />
+        <button
+          type="submit"
+          class="rounded-full bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+        >
+          Add Item
+        </button>
+      </form>
+    </div>
+
+    <!-- List of items -->
+    <div>
+      <ul class="todo-list" id="items-list">
+        <!-- Assuming the server renders the items dynamically -->
         {{ range . }}
-        <li class="{{ if .Selected }}selected{{ end }}">
-          <div class="view">
-            <input class="toggle" type="checkbox" />
-            <label>{{ .Name}}</label>
-            <button class="destroy"></button>
-          </div>
+        <li class="view">
+          <input class="toggle" type="checkbox" />
+          <label>{{ .Name }}</label>
         </li>
         {{ end }}
       </ul>
-      <button
-        class="rounded-full bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
-      >
-        Button
-      </button>
     </div>
   </body>
 </html>
