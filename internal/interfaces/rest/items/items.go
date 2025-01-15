@@ -20,15 +20,9 @@ func RegisterItems(r *gin.Engine, itemsDAO *models.ItemDAO) {
 			return
 		}
 
-		// Check if the request is an HTMX request
-		if c.GetHeader("HX-Request") != "" {
-			c.HTML(http.StatusOK, "views/items", items)
-		} else {
-			c.HTML(http.StatusOK, "index.html", gin.H{
-				"content": "views/items",
-				"items":   items,
-			})
-		}
+		c.HTML(http.StatusOK, "items.html", gin.H{
+			"Items": items,
+		})
 	})
 
 	r.POST("/items", func(c *gin.Context) {

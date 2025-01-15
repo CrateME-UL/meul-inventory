@@ -92,7 +92,7 @@ bdebug:
 # live server to enable hot reload on the html templates
 air:
 	./manage_local_db_container.sh
-	cd ../web && air
+	cd .. && air
 
 static:
 	npm --prefix ../web install

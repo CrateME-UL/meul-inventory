@@ -1,6 +1,7 @@
 package web
 
 import (
+	"embed"
 	"html/template"
 	"io"
 	"net/http"
@@ -8,6 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 )
+
+// Embed all files in the templates directory.
+//
+//go:embed templates/**/*
+var templatesFS embed.FS
 
 type Templates struct {
 	templates *template.Template
@@ -39,7 +45,9 @@ func (tr *templateRender) WriteContentType(w http.ResponseWriter) {
 }
 
 func NewTemplate() *Templates {
+	tmpl := template.Must(template.ParseFS(templatesFS, "templates/**/*"))
+
 	return &Templates{
-		templates: template.Must(template.ParseGlob("../web/templates/**/*")),
+		templates: tmpl,
 	}
 }

@@ -1,36 +1,37 @@
-{{define "views/items"}}
 <!doctype html>
 <html lang="en">
+  {{template "partials/head"}} {{template "partials/navbar"}}
   <body>
-    <div>
-      <form
-        hx-post="/items"
-        hx-target="#items-list"
-        hx-swap="beforeend"
-        hx-trigger="submit"
-      >
-        <label for="name">Item Name</label>
-        <input
-          class="outline"
-          type="text"
-          name="name"
-          id="name"
-          required
-        />
-        <button
-          type="submit"
-          class="rounded-full bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+    <div id="main">
+      <div>
+        <form
+          hx-post="/items"
+          hx-target="#items-list"
+          hx-swap="beforeend"
+          hx-trigger="submit"
         >
-          Add Item
-        </button>
-      </form>
-    </div>
-    <div>
-      <ul class="todo-list" id="items-list">
-        {{ range . }} {{template "components/item" .}} {{ end }}
-      </ul>
+          <label for="name">Item Name</label>
+          <input
+            class="outline"
+            type="text"
+            name="name"
+            id="name"
+            required
+          />
+          <button
+            type="submit"
+            class="rounded-full bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+          >
+            Add Item
+          </button>
+        </form>
+      </div>
+      <div>
+        <ul id="items-list">
+          {{ range .Items }} {{template "components/item" .}} {{ end
+          }}
+        </ul>
+      </div>
     </div>
   </body>
 </html>
-
-{{end}}

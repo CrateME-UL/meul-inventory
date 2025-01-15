@@ -1,8 +1,9 @@
-// Package rest provides the http rest api
+// Package rest provides the http REST API
 package rest
 
 import (
 	"fmt"
+	"meul/inventory/web"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -39,8 +40,8 @@ func DefaultRestServer(restConfig RestConfig, routeRegisterFuncs []RouteRegister
 		registeredFunction(r)
 	}
 
-	//setup the static directory from the web directory as root
-	r.Static("/static", "./static")
+	// Use embedded static files
+	r.StaticFS("/static", web.ServeStaticFiles())
 
 	return r, nil
 }
