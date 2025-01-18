@@ -1,9 +1,13 @@
 cd web
 npx lint-staged
+
 cd ../scripts
 make l
 set -e
+
 pkg=$(go list -m)
-for dir in $(echo $@|xargs -n1 $(pwd)|sort -u); do
-  go vet $pkg/$dir
+
+# Iterate over the directories passed as arguments
+for dir in $@; do
+  go vet $pkg/$(pwd)/$dir
 done
