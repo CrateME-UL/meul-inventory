@@ -64,9 +64,9 @@ func ProvideServerDependencies(itemDAO *models.ItemDAO) []rest.RouteRegisterFunc
 	}
 }
 
-func DefaultApp(HttpServer *gin.Engine) (*App, error) {
+func DefaultApp(httpServer *gin.Engine) (*App, error) {
 	return &App{
-		HttpServer: HttpServer,
+		HttpServer: httpServer,
 	}, nil
 }
 

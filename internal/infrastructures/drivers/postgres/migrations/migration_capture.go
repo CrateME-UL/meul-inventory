@@ -62,7 +62,7 @@ func (m *MigrationHandler) CatchMigrationsToSQLFiles() ([]string, error) {
 				return nil, err
 			}
 
-			//write another file for down migration that is empty
+			// write another file for down migration that is empty
 			var rollbackBuilder strings.Builder
 			rollbackBuilder.WriteString("-- TODO: Add rollback migration here.\n")
 			rollbackBuilder.WriteString("DO $$\n")

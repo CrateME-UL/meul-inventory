@@ -105,7 +105,7 @@ type ViewData struct {
 
 func Test_whenParseWithItems_thenHTMLIsWellFormed(t *testing.T) {
 	mockItems := []models.Item{
-		{ItemID: 1, ItemNumber: uuid.New(), Name: "that1 item"},
+		{ItemID: 1, ItemNumber: uuid.New(), Name: "that item"},
 		{ItemID: 2, ItemNumber: uuid.New(), Name: "another item"},
 	}
 	viewData := ViewData{
