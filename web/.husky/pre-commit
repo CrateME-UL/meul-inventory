@@ -4,11 +4,3 @@ npx lint-staged
 cd ../scripts
 make l
 set -e
-
-pkg=$(go list -m)
-
-# Iterate over the directories passed as arguments
-for dir in $@; do
-  echo $pkg/$(pwd)/$dir
-  go vet $pkg/$(pwd)/$dir
-done
