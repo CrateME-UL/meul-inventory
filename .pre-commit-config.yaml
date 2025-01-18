@@ -24,7 +24,7 @@ repos:
       - id: go-mod-tidy
 
   - repo: https://github.com/prettier/prettier
-    rev: v3.0.0 # Use the latest stable version
+    rev: v3.4.2
     hooks:
       - id: prettier
         args: [--write]
