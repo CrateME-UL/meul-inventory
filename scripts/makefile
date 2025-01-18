@@ -102,3 +102,13 @@ prech:
 	pipx ensurepath
 	pre-commit install
 	pre-commit autoupdate
+
+l:
+	pre-commit run --all-files
+
+
+
+
+
+
+

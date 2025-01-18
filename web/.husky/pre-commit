@@ -1,2 +1,4 @@
 cd web
 npx lint-staged
+cd ../scripts
+make t
