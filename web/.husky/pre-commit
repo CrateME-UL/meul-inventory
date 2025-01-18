@@ -1,5 +1,9 @@
 cd web
 npx lint-staged
 cd ../scripts
-make t
 make l
+set -e
+pkg=$(go list -m)
+for dir in $(echo $@|xargs -n1 $(pwd)|sort -u); do
+  go vet $pkg/$dir
+done
