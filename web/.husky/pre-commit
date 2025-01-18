@@ -3,4 +3,3 @@ npx lint-staged
 
 cd ../scripts
 make l
-set -e
