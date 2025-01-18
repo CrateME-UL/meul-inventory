@@ -1,3 +1,2 @@
 cd web
 npx lint-staged
-echo "test"
