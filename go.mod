@@ -15,10 +15,12 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.1
 	github.com/golang-migrate/migrate/v4 v4.18.1
 	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
+	gotest.tools v2.2.0+incompatible
 )
 
 require (
 	github.com/andybalholm/cascadia v1.3.3 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 )
 

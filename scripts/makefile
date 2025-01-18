@@ -1,99 +1,91 @@
+# Variables
+GO_BUILD_FLAGS = -ldflags "\
+	-X main.buildMode=$(BUILD_MODE) \
+	-X main.dbHost=$(DB_HOST) \
+	-X main.dbUser=$(DB_USER) \
+	-X main.dbPassword=$(DB_PASSWORD) \
+	-X main.dbName=$(DB_NAME) \
+	-X main.dbPort=$(DB_PORT) \
+	-X main.dbSSLMode=$(DB_SSL_MODE)"
+DB_HOST = localhost
+DB_USER = some-postgres
+DB_PASSWORD = mysecretpassword
+DB_NAME = some-postgres
+DB_PORT = 5432
+DB_SSL_MODE = disable
+BUILD_DIR = ../build
+CMD_DIR = ../cmd
+MIGRATIONS_PATH = file://../internal/infrastructures/drivers/postgres/migrations/sql
+
+# Default target
+default: i
+
+t:
+	cd $(CMD_DIR)/inventory && wire
+	cd $(CMD_DIR)/migrations && wire
+	go test ../...
+
+# Install dependencies
 i:
 	go mod tidy
 
-r:
-	make i
-	cd ../cmd/inventory && wire
+# Run the inventory service
+r: i
+	cd $(CMD_DIR)/inventory && wire
 	./manage_local_db_container.sh
-	go run -ldflags "\
-		-X main.buildMode=debug \
-		-X main.dbHost=localhost \
-		-X main.dbUser=some-postgres \
-		-X main.dbPassword=mysecretpassword \
-		-X main.dbName=some-postgres \
-		-X main.dbPort=5432 \
-		-X main.dbSSLMode=disable" \
-		../cmd/inventory/inventory.go ../cmd/inventory/wire_gen.go
+	go run $(GO_BUILD_FLAGS) $(CMD_DIR)/inventory/inventory.go $(CMD_DIR)/inventory/wire_gen.go
 
+# Run migrations commands
 mrename:
-	cd ../cmd/migrations && wire
-	go run -C ../cmd/migrations migrations.go -command rename \
+	cd $(CMD_DIR)/migrations && wire
+	go run -C $(CMD_DIR)/migrations migrations.go -command rename \
 	-base ../../internal/infrastructures/drivers/postgres/migrations/sql/add_items_table
 
 mup:
-	cd ../cmd/migrations && wire
+	cd $(CMD_DIR)/migrations && wire
 	./manage_local_db_container.sh
-	go run -ldflags "\
-		-X main.buildMode=debug \
-		-X main.dbHost=localhost \
-		-X main.dbUser=some-postgres \
-		-X main.dbPassword=mysecretpassword \
-		-X main.dbName=some-postgres \
-		-X main.dbPort=5432 \
-		-X main.dbSSLMode=disable" \
-	../cmd/migrations/migrations.go ../cmd/migrations/wire_gen.go \
+	go run $(GO_BUILD_FLAGS) $(CMD_DIR)/migrations/migrations.go $(CMD_DIR)/migrations/wire_gen.go \
 	-command up \
-	-path "file://../internal/infrastructures/drivers/postgres/migrations/sql"
-	
+	-path "$(MIGRATIONS_PATH)"
+
 mdown:
-	cd ../cmd/migrations && wire
+	cd $(CMD_DIR)/migrations && wire
 	./manage_local_db_container.sh
-	go run -ldflags "\
-		-X main.buildMode=debug \
-		-X main.dbHost=localhost \
-		-X main.dbUser=some-postgres \
-		-X main.dbPassword=mysecretpassword \
-		-X main.dbName=some-postgres \
-		-X main.dbPort=5432 \
-		-X main.dbSSLMode=disable" \
-	../cmd/migrations/migrations.go ../cmd/migrations/wire_gen.go \
+	go run $(GO_BUILD_FLAGS) $(CMD_DIR)/migrations/migrations.go $(CMD_DIR)/migrations/wire_gen.go \
 	-command down \
 	-steps 1 \
-	-path "file://../internal/infrastructures/drivers/postgres/migrations/sql"
+	-path "$(MIGRATIONS_PATH)"
 
-# to define a version of the schema for the up to start at (if force 0 -> when up: skip 0 and start at 1) or to make a version clean
 mforce:
-	cd ../cmd/migrations && wire
+	cd $(CMD_DIR)/migrations && wire
 	./manage_local_db_container.sh
-	go run -C ../cmd/migrations migrations.go wire_gen.go -command force -version 1 \
-	-db "postgres://some-postgres:mysecretpassword@localhost:5432/some-postgres?sslmode=disable" \
-	-path "file://../../internal/infrastructures/drivers/postgres/migrations/sql"
+	go run -C $(CMD_DIR)/migrations migrations.go wire_gen.go -command force -version 1 \
+	-db "postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSL_MODE)" \
+	-path "$(MIGRATIONS_PATH)"
 
+# Build binaries
 bmigrations:
-	go build -C ../cmd/migrations -o migrations
-	mv ../cmd/migrations/migrations ../build/migrations
+	go build -C $(CMD_DIR)/migrations -o migrations
+	mv $(CMD_DIR)/migrations/migrations $(BUILD_DIR)/migrations
 
-brelease:
-	make i
-	cd ../cmd/inventory && wire
-	go build -C ../cmd/inventory -ldflags "\
-		-X main.buildMode=release \
-		-X main.dbHost=localhost \
-		-X main.dbUser=some-postgres \
-		-X main.dbPassword=mysecretpassword \
-		-X main.dbName=some-postgres \
-		-X main.dbPort=5432 \
-		-X main.dbSSLMode=disable" \
-		-o inv-meul-app inventory.go wire_gen.go && mv ../cmd/inventory/inv-meul-app ../build/inv-meul-app
+brelease: BUILD_MODE = release
+brelease: i
+	cd $(CMD_DIR)/inventory && wire
+	go build -C $(CMD_DIR)/inventory $(GO_BUILD_FLAGS) -o inv-meul-app inventory.go wire_gen.go
+	mv $(CMD_DIR)/inventory/inv-meul-app $(BUILD_DIR)/inv-meul-app
 
-bdebug:
-	make i
-	cd ../cmd/inventory && wire
-	go build -C ../cmd/inventory -ldflags "\
-		-X main.buildMode=debug \
-		-X main.dbHost=localhost \
-		-X main.dbUser=some-postgres \
-		-X main.dbPassword=mysecretpassword \
-		-X main.dbName=some-postgres \
-		-X main.dbPort=5432 \
-		-X main.dbSSLMode=disable" \
-		-o inv-meul-app inventory.go wire_gen.go && mv ../cmd/inventory/inv-meul-app ../build/inv-meul-app
+bdebug: BUILD_MODE = debug
+bdebug: i
+	cd $(CMD_DIR)/inventory && wire
+	go build -C $(CMD_DIR)/inventory $(GO_BUILD_FLAGS) -o inv-meul-app inventory.go wire_gen.go
+	mv $(CMD_DIR)/inventory/inv-meul-app $(BUILD_DIR)/inv-meul-app
 
-# live server to enable hot reload on the html templates
+# Live server for hot reload
 air:
 	./manage_local_db_container.sh
 	cd .. && air
 
+# Build static files
 static:
 	npm --prefix ../web install
 	npm --prefix ../web run build
@@ -103,3 +95,10 @@ static:
 tw:
 	cd ../web && npx tailwindcss -i ./src/input.css -o ./static/css/output.css --watch
 
+prech:
+	sudo apt update
+	sudo apt install pipx
+	pipx install pre-commit
+	pipx ensurepath
+	pre-commit install
+	pre-commit autoupdate
