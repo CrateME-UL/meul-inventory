@@ -4,6 +4,7 @@ repos:
     hooks:
       - id: go-fmt
       - id: go-vet
+        files: \.go$
       - id: go-imports
       - id: go-cyclo
         args: [-over=15]

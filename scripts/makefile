@@ -104,6 +104,8 @@ prech:
 	pre-commit autoupdate
 
 l:
+	cd $(CMD_DIR)/inventory && wire
+	cd $(CMD_DIR)/migrations && wire
 	pre-commit run --all-files
 
 
