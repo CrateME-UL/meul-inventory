@@ -1,0 +1,9 @@
+**/.husky/
+# FIXME: add a CDN with cloudfront on S3 instead to serve static files. for now, make sure to generate the static files before the image build
+# **/static/
+# **/node_modules/
+**/tmp/
+**/.prettierrc
+
+*.env
+*.txt

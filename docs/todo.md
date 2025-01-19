@@ -1,7 +1,0 @@
-- [ ] linting et formatting -> ESLint et Prettier, pre-commit hooks Husky, Pre-commit
-- [ ] Vite -> compilation, chunks and source maps for JS, TS, compress gzip, app svg images, FontAwesome icons
-- [ ] Package dependencies, Dependabot, Coveralls
-- [ ]
-- [ ] CI/CD github actions
-- [ ] Create AWS Admin account
-- [ ]

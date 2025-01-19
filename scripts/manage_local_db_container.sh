@@ -14,4 +14,5 @@ else
         -e POSTGRES_DB=some-postgres \
         -e POSTGRES_PASSWORD=mysecretpassword \
         -p 5432:5432 postgres:16.3
+    make mup
 fi

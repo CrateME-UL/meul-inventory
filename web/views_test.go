@@ -1,8 +1,7 @@
-package templates
+package web
 
 import (
 	"bytes"
-	"embed"
 	"encoding/xml"
 	"html/template"
 	"io"
@@ -16,15 +15,12 @@ import (
 	"gotest.tools/assert"
 )
 
-//go:embed **/*.html
-var templatesFS embed.FS
-
 func renderIndexView(templateName string, model any) bytes.Buffer {
 	templ := template.Must(template.ParseFS(
 		templatesFS,
-		"views/"+templateName,
-		"partials/head.html",
-		"partials/navbar.html",
+		"templates/views/"+templateName,
+		"templates/partials/head.html",
+		"templates/partials/navbar.html",
 	))
 
 	var buf bytes.Buffer
@@ -38,10 +34,10 @@ func renderIndexView(templateName string, model any) bytes.Buffer {
 func renderItemsView(templateName string, model any) bytes.Buffer {
 	templ := template.Must(template.ParseFS(
 		templatesFS,
-		"views/"+templateName,
-		"partials/head.html",
-		"partials/navbar.html",
-		"components/item.html",
+		"templates/views/"+templateName,
+		"templates/partials/head.html",
+		"templates/partials/navbar.html",
+		"templates/components/item.html",
 	))
 
 	var buf bytes.Buffer
