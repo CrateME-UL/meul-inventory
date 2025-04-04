@@ -1,23 +1,23 @@
 # go-exploration
 
-### to install go:
+## to install go
 
-- https://go.dev/doc/install
-- https://go.dev/doc/tutorial/
+- <https://go.dev/doc/install>
+- <https://go.dev/doc/tutorial/>
 
-### for .vscode support:
+## for .vscode support
 
 - umutbasal.go-snippets-vscode
 - golang.go
 
-#### key bindings vscode and snippets .vscode
+### key bindings vscode and snippets .vscode
 
 - ms-vscode.notepadplusplus-keybindings
 - umutbasal.go-snippets-vscode
 - look for the other commands `F1 Go:*` and add shortcut if needed
 - debugger is already included and decent
 
-#### useful extensions:
+### useful extensions
 
 - usernamehw.errorlens
 - mhutchie.git-graph
@@ -33,8 +33,8 @@
 - otovo-oss.htmx-tags
 - mikestead.dotenv
 
-### for vim support:
+### for vim support
 
-- https://github.com/fatih/vim-go
-- https://github.com/fatih/vim-go/wiki/Tutorial#quick-setup
+- <https://github.com/fatih/vim-go>
+- <https://github.com/fatih/vim-go/wiki/Tutorial#quick-setup>
 - copy the [.vimrc](./misc/.vimrc) file at `~/.vimrc`

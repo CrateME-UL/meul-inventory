@@ -5,10 +5,18 @@
 - [ ] add a better tooling for secure password management
 - [ ] docker compose
 - [ ] docker swarm
+- [ ] add pipeline backup setup for automatic backups in s3 from swarm setup and restore
+- [ ] add schedule for stopping machine outside work hours
 - [ ] IaC with AWS
 - [ ] dependabot
 - [ ] add maps for json static files with build
-- [ ] CDN with S3 and AWS CloudFront for static website and CD
+- [ ] add dns
+- [ ] adjust ip automatically on ec2 start for dns with ansible
+- [x] don't restrict access to static route it's all public anyway
+- [ ] add JWT token for auth for all routes and specially for users with special authorizations
+- [ ] store images on s3 and add signed URL for users with auth for read-only
+- [ ] add a repository for s3 storage of assets with exposed api route for admin users
+- [ ] use Cognito for user management
 - [ ] CLI for SQL migrations (add tests)
 - [ ] CLI for generating SQL migrations files (add tests)
 - [x] Medium Migrations Tests Up and Down
